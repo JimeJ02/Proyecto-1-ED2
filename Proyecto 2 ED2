@@ -44,6 +44,7 @@ void setup() {
   pinMode(greenLed, OUTPUT); 
   pinMode(yellowLed, OUTPUT);
   pinMode(redLed, OUTPUT);
+  pinMode(sensorTemp, INPUT);
 }
 
 //Parte 1
