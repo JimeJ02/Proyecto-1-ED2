@@ -1,0 +1,54 @@
+//Librerias
+#include <Arduino.h>
+#include <ESP32Servo.h>
+#include <Esp32WifiManager.h>
+
+//PWM servo
+#define pwmChannel 0 
+#define freqPWM 3000
+
+//Luces leds RGB
+#define ledRChannel 1
+#define ledGChannel 2 
+#define ledBChannel 3 
+
+//Pines de Leds
+const int geenLed = 22;
+const int yellowLed = 21;
+const int redLed = 19;
+
+//Pin de boton
+const int buttonStart = 18;
+
+//Pin de sensor de temperatura
+const int sensorTemp = 15;
+
+//Pin de servo
+const int servo = 5;
+Servo myservo;
+
+77Definicón de la posición del servo y cambio de color
+int posición inicial = 90;
+int movimiento = 15; 
+int cammbioColor = 0; //0: apagado; 1:verde; 2:amarillo; 3:rojo;
+int cambioServo = 0;
+
+//Configuración de Leds, servo y motores
+void setup() {
+  Serial.begin(115200);
+ 
+  myservo.attach(servo);
+  myservo.write(posicion);
+
+  pinMode(buttonStart, INPUT_PULLUP);
+  pinMode(greenLed, OUTPUT); 
+  pinMode(yellowLed, OUTPUT);
+  pinMode(redLed, OUTPUT);
+}
+
+//Parte 1
+//Parte 2
+//Parte 3
+//Parte 4
+//Parte 5
+//Parte 6
