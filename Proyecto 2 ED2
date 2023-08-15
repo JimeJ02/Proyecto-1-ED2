@@ -13,7 +13,7 @@
 #define ledBChannel 3 
 
 //Pines de Leds
-const int geenLed = 22;
+const int greenLed = 22;
 const int yellowLed = 21;
 const int redLed = 19;
 
