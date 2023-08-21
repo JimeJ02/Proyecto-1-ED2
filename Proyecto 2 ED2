@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <ESP32Servo.h>
 #include <Esp32WifiManager.h>
+//#include <
 
 //PWM servo
 #define pwmChannel 0 
@@ -11,6 +12,8 @@
 #define ledRChannel 1
 #define ledGChannel 2 
 #define ledBChannel 3 
+
+//#define LM35 
 
 //Pines de Leds
 const int greenLed = 22;
@@ -22,12 +25,13 @@ const int buttonStart = 18;
 
 //Pin de sensor de temperatura
 const int sensorTemp = 15;
+float value;
 
 //Pin de servo
 const int servo = 5;
 Servo myservo;
 
-77Definicón de la posición del servo y cambio de color
+//Definicón de la posición del servo y cambio de color
 int posición inicial = 90;
 int movimiento = 15; 
 int cammbioColor = 0; //0: apagado; 1:verde; 2:amarillo; 3:rojo;
@@ -45,6 +49,41 @@ void setup() {
   pinMode(yellowLed, OUTPUT);
   pinMode(redLed, OUTPUT);
   pinMode(sensorTemp, INPUT);
+}
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(sensroTemp,INPUT);
+  pinMode(servo,OUTPUT);
+}
+
+void loop () {
+  delay(100);
+
+  if (digitalRead (buttonStart) == HIGH);
+
+
+}
+
+void loop() 
+{
+Value = analogRead(sensorTemp);
+Temperature = ( Value * 5.0 * 100.0)/1023.0;
+if(Temperatura < 37)
+{
+  digitalWrite(greenLed,HIGH);
+}
+else if (Temperatura 37 < && < 37.5 )
+{
+  digitalWrite(yellowLed,HIGH);
+}
+else if (Temperature < 37.5)
+{
+    digitalWrite(redLed,HIGH);
+}
+  Serial.println(Temperature);
+  delay(50)
 }
 
 //Parte 1
