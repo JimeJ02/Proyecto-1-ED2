@@ -70,7 +70,7 @@ void loop()
 {
 Value = analogRead(sensorTemp);
 Temperature = ( Value * 5.0 * 100.0)/1023.0;
-if(Temperatura < 37)
+if(Temperature < 37)
 {
   digitalWrite(greenLed,HIGH);
 }
