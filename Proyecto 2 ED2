@@ -18,15 +18,18 @@
 #define display3  15
 
 //Pines de Leds
-const int greenLed = 22;
-const int yellowLed = 21;
-const int redLed = 19;
+const int greenLed = 21;
+const int yellowLed = 29;
+const int redLed = 18;
 
 //Pin analógica para sensor de temperatura LM35
 const int LM35Pin = A0;  
 
 //Boton de inicio
-const int buttonPin = 15;
+const int buttonPin = 22;
+
+// Definición de pines para el servo
+const int servoPin = 5;
 
 // Variables para almacenar la temperatura
 int sensorValue = 0;
@@ -39,6 +42,7 @@ int redBrightness = 0;
 
 bool measureTemperature = false; //Indicador para medir la temperatura al presionar el boton "Start"
 
+Servo myservo;
 
 //Definicón de la posición del servo y cambio de color
 int posición inicial = 90;
@@ -84,6 +88,8 @@ else if (Temperature < 37.5)
 
 //Parte 2: Semáforo de temperatura 
 
+//Parte 3: Reloj de semáforo de temperatura 
+
 void setup() {
   Serial.begin(115200);
 
@@ -94,6 +100,9 @@ void setup() {
 
   // Configurar el botón como entrada con resistencia interna
   pinMode(buttonStart, INPUT_PULLUP);
+
+  // Configurar pin del servo
+  myservo.attach(servoPin);
 }
 
 void loop() {
@@ -119,14 +128,17 @@ void loop() {
       greenBrightness = 255;
       yellowBrightness = 0;
       redBrightness = 0;
+      myservo.write(45); // Mover servo a 45°
     } else if (temperature >= 37.0 && temperature < 37.5) {
       greenBrightness = 0;
       yellowBrightness = 255;
       redBrightness = 0;
+      myservo.write(90); // Mover servo a 90°
     } else {
       greenBrightness = 0;
       yellowBrightness = 0;
       redBrightness = 255;
+      myservo.write(135); // Mover servo a 135°
     }
 
     // Aplicar las señales PWM a los LEDs
@@ -139,7 +151,7 @@ void loop() {
   delay(100);
 }
 
-//Parte 3
+
 //Parte 4: Despliegue de temperatura 
 
 
