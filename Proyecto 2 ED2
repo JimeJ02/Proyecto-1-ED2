@@ -39,10 +39,11 @@ float temperature = 0.0;
 int greenBrightness = 0;
 int yellowBrightness = 0;
 int redBrightness = 0;
+int servoAngle = 0; 
 
 bool measureTemperature = false; //Indicador para medir la temperatura al presionar el boton "Start"
 
-Servo myservo;
+
 
 //Definicón de la posición del servo y cambio de color
 int posición inicial = 90;
@@ -84,11 +85,9 @@ else if (Temperature < 37.5)
   delay(50)
 }*/
 
-//Parte 1: Sensor de temperatura 
-
+//Parte 1: Sensor de temperatura
 //Parte 2: Semáforo de temperatura 
-
-//Parte 3: Reloj de semáforo de temperatura 
+//Parte 3: Reloj de semáforo de temperatura
 
 void setup() {
   Serial.begin(115200);
@@ -102,14 +101,15 @@ void setup() {
   pinMode(buttonStart, INPUT_PULLUP);
 
   // Configurar pin del servo
-  myservo.attach(servoPin);
+  pinMode(servoPin, OUTPUT);
 }
+
 
 void loop() {
   // Leer el estado del botón
   int buttonState = digitalRead(buttonStart);
 
-  // Si se presiona el botón se comienza a medir la temperatura 
+  // Si se presiona el botón se comienza a medir la temperatura
   if (buttonState == LOW) {
     measureTemperature = true;
   }
@@ -118,38 +118,50 @@ void loop() {
     // Leer el valor del sensor LM35
     sensorValue = analogRead(LM35Pin);
 
-    // Convertir el valor de la temperatura en grados Celsius mediante una formula
+    // Convertir el valor del ADC a temperatura en grados Celsius mediante el uso de una formula
     temperature = (sensorValue * 3300.0) / 4095.0; 
     temperature = temperature / 10.0; 
 
-
-    // Determinar led encendido dependiendo de la temperatura obtenida
+    // Determinar led prendido y angulo del servo segun la temperatura
     if (temperature < 37.0) {
       greenBrightness = 255;
       yellowBrightness = 0;
       redBrightness = 0;
-      myservo.write(45); // Mover servo a 45°
+      servoAngle = 45; // Mover servo a 45°
     } else if (temperature >= 37.0 && temperature < 37.5) {
       greenBrightness = 0;
       yellowBrightness = 255;
       redBrightness = 0;
-      myservo.write(90); // Mover servo a 90°
+      servoAngle = 90; // Mover servo a 90°
     } else {
       greenBrightness = 0;
       yellowBrightness = 0;
       redBrightness = 255;
-      myservo.write(135); // Mover servo a 135°
+      servoAngle = 135; // Mover servo a 135°
     }
 
-    // Aplicar las señales PWM a los LEDs
-    analogWrite(greenLed, redBrightness);
-    analogWrite(yellowLed, greenBrightness);
-    analogWrite(redLed, yellowBrightness);
+    // Aplicar las señales PWM a los Leds y al servo
+    analogWrite(greenLed, greenBrightness);
+    analogWrite(yellowLed, yellowBrightness);
+    analogWrite(redLed, redBrightness);
 
-    measureTemperature = false; // Reiniciar el sensor luego de medir la temperatura 
+    for (int angle = 0; angle <= servoAngle; angle++) {
+      analogWrite(servoPin, map(angle, 0, 180, 0, 255));
+      delay(15);
+    }
+    for (int angle = servoAngle; angle >= 0; angle--) {
+      analogWrite(servoPin, map(angle, 0, 180, 0, 255));
+      delay(15);
+    }
+
+    measureTemperature = false; // Reiniciar el sensor luego de medir la temepratura
   }
-  delay(100);
+
+  delay(100); 
 }
+
+
+
 
 
 //Parte 4: Despliegue de temperatura 
