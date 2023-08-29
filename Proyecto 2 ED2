@@ -1,7 +1,6 @@
 //Librerias
 #include <Arduino.h>
-#include <ESP32Servo.h>
-#include <Esp32WifiManager.h>
+#include <driver/ledc.h>
 
 //Display de 7 segmentos
 #define pinA  34
@@ -18,9 +17,9 @@
 #define display3  15
 
 //Pines de Leds
-const int greenLed = 21;
+const int greenLed = 18;
 const int yellowLed = 29;
-const int redLed = 18;
+const int redLed = 21;
 
 //Pin analógica para sensor de temperatura LM35
 const int LM35Pin = A0;  
@@ -28,8 +27,8 @@ const int LM35Pin = A0;
 //Boton de inicio
 const int buttonPin = 22;
 
-// Definición de pines para el servo
-const int servoPin = 5;
+// Definición de configuración PMW
+ledc_channel_config_t channel_config; //PMW
 
 // Variables para almacenar la temperatura
 int sensorValue = 0;
@@ -88,7 +87,7 @@ else if (Temperature < 37.5)
 //Parte 1: Sensor de temperatura
 //Parte 2: Semáforo de temperatura 
 //Parte 3: Reloj de semáforo de temperatura
-
+ 
 void setup() {
   Serial.begin(115200);
 
@@ -100,8 +99,24 @@ void setup() {
   // Configurar el botón como entrada con resistencia interna
   pinMode(buttonStart, INPUT_PULLUP);
 
-  // Configurar pin del servo
-  pinMode(servoPin, OUTPUT);
+
+  channel_config.gpio_num = 5;
+  channel_config.speed_mode = LEDC_HIGH_SPEED_MODE;
+  channel_config.channel = LEDC_CHANNEL_0;
+  channel_config.intr_type = LEDC_INTR_DISABLE;
+  channel_config.timer_sel = LEDC_TIMER_0;
+  channel_config.duty = 75;
+
+  ledc_channel_config(&channel_config); 
+  ledc_timer_config_t timer_config; 
+  ledc_timer_config(&timer_config);
+
+  timer_config.speed_mode = LEDC_HIGH_SPEED_MODE;
+  timer_config.duty_resolution = LEDC_TIMER_10_BIT;
+  timer_config.timer_num = LEDC_TIMER_0;
+  timer_config.freq_hz = 50; //Frecuencia
+
+ledc_timer_config(&timer_config);
 }
 
 
@@ -127,38 +142,33 @@ void loop() {
       greenBrightness = 255;
       yellowBrightness = 0;
       redBrightness = 0;
-      servoAngle = 45; // Mover servo a 45°
+      servoAngle = map(greenBrightness, 77, 255, 25, 58);; // Mover servo a 35°
     } else if (temperature >= 37.0 && temperature < 37.5) {
       greenBrightness = 0;
       yellowBrightness = 255;
       redBrightness = 0;
-      servoAngle = 90; // Mover servo a 90°
+      servoAngle = map(yellowBrightness, 77, 255, 59, 92);
     } else {
       greenBrightness = 0;
       yellowBrightness = 0;
       redBrightness = 255;
-      servoAngle = 135; // Mover servo a 135°
+      servoAngle = map(redBrightness, 77, 255, 93, 125);
     }
-
+    ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0, servoAngle );
+    ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0);
+    delay(100);
     // Aplicar las señales PWM a los Leds y al servo
     analogWrite(greenLed, greenBrightness);
     analogWrite(yellowLed, yellowBrightness);
     analogWrite(redLed, redBrightness);
 
-    for (int angle = 0; angle <= servoAngle; angle++) {
-      analogWrite(servoPin, map(angle, 0, 180, 0, 255));
-      delay(15);
-    }
-    for (int angle = servoAngle; angle >= 0; angle--) {
-      analogWrite(servoPin, map(angle, 0, 180, 0, 255));
-      delay(15);
-    }
-
     measureTemperature = false; // Reiniciar el sensor luego de medir la temepratura
-  }
 
   delay(100); 
+  }
 }
+
+
 
 
 
